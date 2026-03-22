@@ -1,0 +1,51 @@
+version: "3.8"
+
+services:
+
+  selenoid:
+    image: aerokube/selenoid:latest
+    ports:
+      - "4444:4444"
+    environment:
+      - DOCKER_API_VERSION=1.45
+    networks:
+      - selenoid-net
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./config:/etc/selenoid
+      - selenoid-video:/opt/selenoid/video
+    command: >
+      -conf /etc/selenoid/browsers.json
+      -video-output-dir /opt/selenoid/video
+      -container-network selenoid-net
+      -video-recorder-image aerokube/video-recorder:latest-release
+    healthcheck:
+      test: [ "CMD", "wget", "--spider", "-q", "http://localhost:4444/status" ]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+      start_period: 5s
+
+  tests:
+    build: .
+    depends_on:
+      selenoid:
+        condition: service_healthy
+    networks:
+      - selenoid-net
+    environment:
+      - SELENOID_URL=http://selenoid:4444/wd/hub
+      - PYTEST_EXTRA_ARGS=${PYTEST_EXTRA_ARGS:-}
+    volumes:
+      - selenoid-video:/app/selenoid-video
+      - ./allure-results:/app/allure-results
+    command: >
+      sh -c "pytest --alluredir=allure-results $$PYTEST_EXTRA_ARGS"
+
+networks:
+  selenoid-net:
+    name: selenoid-net
+
+volumes:
+  selenoid-video:
+    name: selenoid-video

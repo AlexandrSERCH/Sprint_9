@@ -1,0 +1,74 @@
+name: Run Tests
+
+on:
+  push:
+    branches:
+      - develop
+
+  workflow_dispatch:
+    inputs:
+      marker:
+        description: "Выберите какие тесты запустить"
+        required: false
+        default: All
+        type: choice
+        options:
+          - All
+          - UI
+          - smoke
+          - regress
+          - recipes
+          - users
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Pull Selenoid browser images
+        run: |
+          docker pull selenoid/vnc_chrome:128.0
+          docker pull aerokube/video-recorder:latest-release
+
+      - name: Build test image
+        run: docker compose build tests
+
+      - name: Run tests
+        run: |
+          MARKER="${{ github.event.inputs.marker }}"
+          if [ -n "$MARKER" ]; then
+            PYTEST_ARGS="-m $MARKER"
+          else
+            PYTEST_ARGS=""
+          fi
+          docker compose run --rm \
+            -e PYTEST_EXTRA_ARGS="$PYTEST_ARGS" \
+            -e SELENOID_VIDEO=false \
+            tests
+
+      - name: Upload Allure results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-results-${{ github.run_id }}
+          path: allure-results/
+          retention-days: 7
+
+      - name: Upload video artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: selenoid-video-${{ github.run_id }}
+          path: selenoid-video/
+          retention-days: 3
+          if-no-files-found: ignore
+
+      - name: Tear down
+        if: always()
+        run: docker compose down -v
