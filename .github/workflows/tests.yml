@@ -8,12 +8,12 @@ on:
   workflow_dispatch:
     inputs:
       marker:
-        description: "Pytest marker (оставь пустым для запуска всех тестов)"
+        description: "Выберите какие тесты запустить"
         required: false
-        default: ""
+        default: All
         type: choice
         options:
-          - ""
+          - All
           - UI
           - smoke
           - regress
