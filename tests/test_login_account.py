@@ -1,12 +1,14 @@
 import allure
 
+from utils.mark import mark_tag
+
 
 @allure.epic("Пользователи")
 @allure.feature("Авторизация пользователя")
 class TestLoginAccount:
 
     @allure.severity(allure.severity_level.CRITICAL)
-    @allure.tag("UI", "smoke", "regress", "Пользователи")
+    @mark_tag("UI", "smoke", "regress", "users")
     @allure.title("Успешная авторизация пользователя")
     def test_succes_login_account(self, registered_user, login_page, register_page, header_component, recipes_page):
         register_page.open()

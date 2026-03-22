@@ -1,6 +1,7 @@
 import allure
 
 from data.recipes.recept_builder import build_recipt
+from utils.mark import mark_tag
 
 
 @allure.epic("Рецепты")
@@ -8,7 +9,7 @@ from data.recipes.recept_builder import build_recipt
 class TestCreateRecept:
 
     @allure.severity(allure.severity_level.CRITICAL)
-    @allure.tag("UI", "smoke", "regress", "Рецепты")
+    @mark_tag("UI", "smoke", "regress", "recipes")
     @allure.title("Успешное создание рецепта")
     def test_succes_create_recept(self, recipes_page, auth_user, header_component, recept_page):
         recept_data = build_recipt()

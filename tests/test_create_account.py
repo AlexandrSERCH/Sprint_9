@@ -1,6 +1,7 @@
 import allure
 
 from data.users.user_builder import UserBuilder
+from utils.mark import mark_tag
 
 
 @allure.epic("Пользователи")
@@ -8,7 +9,7 @@ from data.users.user_builder import UserBuilder
 class TestCreateAccount:
 
     @allure.severity(allure.severity_level.CRITICAL)
-    @allure.tag("UI", "smoke", "regress", "Пользователи")
+    @mark_tag("UI", "smoke", "regress", "users")
     @allure.title("Успешное создание пользователя")
     def test_succes_create_account(self, login_page, header_component, register_page):
         user_data = UserBuilder().build()
