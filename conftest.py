@@ -23,7 +23,7 @@ def browser():
     if selenoid_url:
         options = Options()
         options.set_capability("browserName", "chrome")
-        options.set_capability("browserVersion", "latest")
+        options.set_capability("browserVersion", "128.0")
         options.set_capability("selenoid:options", {
             "enableVideo": True,  # запись видео
             "enableVNC": True,  # просмотр в реальном времени

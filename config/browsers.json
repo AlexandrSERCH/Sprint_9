@@ -1,12 +1,11 @@
 {
   "chrome": {
-    "default": "latest",
+    "default": "128.0",
     "versions": {
-      "latest": {
-        "image": "browsers/chrome:latest",
+      "128.0": {
+        "image": "selenoid/vnc_chrome:128.0",
         "port": "4444",
-        "path": "/",
-        "enableVideo": true
+        "path": "/"
       }
     }
   }
