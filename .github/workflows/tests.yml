@@ -20,6 +20,9 @@ on:
           - recipes
           - users
 
+permissions:
+  contents: write
+
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -68,6 +71,42 @@ jobs:
           path: selenoid-video/
           retention-days: 3
           if-no-files-found: ignore
+
+      # Скачиваем историю предыдущих запусков из gh-pages
+      - name: Download Allure history
+        if: always()
+        continue-on-error: true
+        uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+          path: gh-pages
+
+      # Генерируем Allure report с историей
+      - name: Generate Allure report
+        if: always()
+        uses: simple-elf/allure-report-action@master
+        with:
+          gh_pages: gh-pages
+          allure_results: allure-results
+          allure_report: allure-report
+          allure_history: allure-history
+
+      # Публикуем отчёт в ветку gh-pages
+      - name: Publish Allure report to GitHub Pages
+        if: always()
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          personal_token: ${{ secrets.TOKEN_GITHUB }}
+          publish_branch: gh-pages
+          publish_dir: allure-history
+
+      - name: Print report URL
+        if: always()
+        run: |
+          echo ""
+          echo "======[ Allure Report ]======"
+          echo "🔗 https://AlexandrSERCH.github.io/Sprint_9/${{ github.run_number }}/"
+          echo "============================="
 
       - name: Tear down
         if: always()
