@@ -1,6 +1,9 @@
+import os
+
 import allure
 import pytest
 from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
 
 import constants
 from data.users.user_builder import UserBuilder
@@ -15,7 +18,24 @@ from utils.attach import attach_screenshot
 
 @pytest.fixture(autouse=True)
 def browser():
-    driver = webdriver.Chrome()
+    selenoid_url = os.getenv("SELENOID_URL")
+
+    if selenoid_url:
+        options = Options()
+        options.set_capability("browserName", "chrome")
+        options.set_capability("browserVersion", "latest")
+        options.set_capability("selenoid:options", {
+            "enableVideo": True,  # запись видео
+            "enableVNC": True,  # просмотр в реальном времени
+            "screenResolution": "1920x1080x24"
+        })
+        driver = webdriver.Remote(
+            command_executor=selenoid_url,
+            options=options
+        )
+    else:
+        driver = webdriver.Chrome()
+
     driver.maximize_window()
 
     yield driver

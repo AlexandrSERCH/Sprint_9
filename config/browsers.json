@@ -1,0 +1,13 @@
+{
+  "chrome": {
+    "default": "latest",
+    "versions": {
+      "latest": {
+        "image": "browsers/chrome:latest",
+        "port": "4444",
+        "path": "/",
+        "enableVideo": true
+      }
+    }
+  }
+}
