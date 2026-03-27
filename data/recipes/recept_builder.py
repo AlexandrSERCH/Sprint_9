@@ -40,7 +40,7 @@ RECIPE_DESCRIPTIONS = [
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 
-def build_reciptt() -> RecipeData:
+def build_recipt() -> RecipeData:
     return RecipeData(
         recept_name=random.choice(RECIPE_NAMES),
         ingredient_name=random.choice(INGRIDIENTS_NAMES),
