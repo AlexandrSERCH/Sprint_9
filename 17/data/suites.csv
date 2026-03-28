@@ -1,0 +1,4 @@
+"DESCRIPTION","DURATION IN MS","NAME","PARENT SUITE","START TIME","STATUS","STOP TIME","SUB SUITE","SUITE","TEST CLASS","TEST METHOD"
+"","2731","Успешное создание пользователя","tests","Sat Mar 28 11:14:58 UTC 2026","passed","Sat Mar 28 11:15:01 UTC 2026","TestCreateAccount","test_create_account","",""
+"","4535","Успешное создание рецепта","tests","Sat Mar 28 11:15:00 UTC 2026","passed","Sat Mar 28 11:15:05 UTC 2026","TestCreateRecept","test_create_recept","",""
+"","2393","Успешная авторизация пользователя","tests","Sat Mar 28 11:14:59 UTC 2026","passed","Sat Mar 28 11:15:01 UTC 2026","TestLoginAccount","test_login_account","",""
