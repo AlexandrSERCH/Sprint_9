@@ -25,7 +25,7 @@ def browser():
         options.set_capability("browserName", "chrome")
         options.set_capability("browserVersion", "128.0")
         options.set_capability("selenoid:options", {
-            "enableVideo": True,  # запись видео
+            "enableVideo": False,  # запись видео
             "enableVNC": False,  # просмотр в реальном времени
             "screenResolution": "1920x1080x24"
         })
