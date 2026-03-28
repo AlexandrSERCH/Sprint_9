@@ -1,0 +1,94 @@
+name: Run Tests
+
+on:
+  push:
+    branches:
+      - develop
+
+  workflow_dispatch:
+    inputs:
+      marker:
+        description: "Выберите какие тесты запустить"
+        required: false
+        default: All
+        type: choice
+        options:
+          - All
+          - UI
+          - smoke
+          - regress
+          - recipes
+          - users
+
+permissions:
+  contents: write
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Pull Selenoid browser image
+        run: docker pull selenoid/vnc_chrome:128.0
+
+      - name: Build test image
+        run: docker compose build tests
+
+      - name: Run tests
+        run: |
+          MARKER="${{ github.event.inputs.marker }}"
+          if [ -n "$MARKER" ] && [ "$MARKER" != "All" ]; then
+            PYTEST_ARGS="-m $MARKER"
+          else
+            PYTEST_ARGS=""
+          fi
+          docker compose run --rm \
+            -e PYTEST_EXTRA_ARGS="$PYTEST_ARGS" \
+            tests
+
+      - name: Upload Allure results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-results-${{ github.run_id }}
+          path: allure-results/
+          retention-days: 7
+
+      - name: Download Allure history
+        if: always()
+        continue-on-error: true
+        uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+          path: gh-pages
+
+      - name: Generate Allure report
+        if: always()
+        uses: simple-elf/allure-report-action@master
+        with:
+          gh_pages: gh-pages
+          allure_results: allure-results
+          allure_report: allure-report
+          allure_history: allure-history
+
+      - name: Publish Allure report to GitHub Pages
+        if: always()
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          personal_token: ${{ secrets.TOKEN_GITHUB }}
+          publish_branch: gh-pages
+          publish_dir: allure-history
+
+      - name: Print report URL
+        if: always()
+        run: |
+          echo "======[ Allure Report ]======"
+          echo "https://AlexandrSERCH.github.io/Sprint_9/${{ github.run_number }}/"
+          echo "============================="
+
+      - name: Tear down
+        if: always()
+        run: docker compose down -v
